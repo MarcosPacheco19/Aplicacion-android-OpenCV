@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/vision_artificial"
+    android:gravity="center|bottom"
+    android:orientation="vertical"
+    android:paddingBottom="2dp"
+    tools:context=".MainActivity"
+    >
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="85dp"
+        android:layout_gravity="center|top"
+        android:background="@drawable/nelson"
+        android:contentDescription="@string/todo"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nelson_ortega"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center|top"
+        android:background="@drawable/marcos"
+        android:contentDescription="@string/nada"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/marcos_pacheco"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        />
+
+    <Button
+        android:id="@+id/camara"
+        android:layout_width="159dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="22dp"
+        android:backgroundTint="#0B8778"
+        android:shadowRadius="@android:integer/config_longAnimTime"
+        android:text="@string/camara"
+        android:textColor="@color/white" />
+
+</LinearLayout>
