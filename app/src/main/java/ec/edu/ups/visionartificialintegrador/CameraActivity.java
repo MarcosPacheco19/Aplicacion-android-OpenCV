@@ -75,6 +75,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
     private Bitmap entradaHistogram;
     private Bitmap salidaHistogram;
 
+    private ExpresionesFaciales expresionesFaciales;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +100,22 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
 
         cameraBridgeViewBase = findViewById(R.id.frame);
         cameraBridgeViewBase.setVisibility(SurfaceView.VISIBLE);
+
+        if(OpenCVLoader.initDebug()){
+            cameraBridgeViewBase.enableView();
+            Toast.makeText(getApplicationContext(), "OpenCV cargado satisfactoriamente", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getApplicationContext(), "OpenCV no se ha podido cargar", Toast.LENGTH_SHORT).show();
+        }
+
+        try{
+            int inputSize=48;
+            expresionesFaciales = new ExpresionesFaciales(getAssets(),CameraActivity.this,
+                    "NNExpresionesFaciales.tflite", inputSize) ;
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
         cameraBridgeViewBase.setCvCameraViewListener(new CameraBridgeViewBase.CvCameraViewListener2() {
             @Override
             public void onCameraViewStarted(int width, int height) {
@@ -146,6 +164,8 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                     aCapturarMovimiento(entrada,salida);
                     Utils.bitmapToMat(salida, nuevaImagen);
                     imagenRGB=nuevaImagen.clone();
+                }else if(Objects.equals(filtroSeleccionado, "Deteccion Expresiones Faciales")){
+                    imagenRGB=expresionesFaciales.reconocerImagenes(imagenRGB);
                 }
 
                 tomarPhoto=tomarFotografia(tomarPhoto,imagenRGB);
@@ -156,15 +176,6 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
                 return imagenRGB;
             }
         });
-
-
-
-        if(OpenCVLoader.initDebug()){
-            cameraBridgeViewBase.enableView();
-            Toast.makeText(getApplicationContext(), "OpenCV cargado satisfactoriamente", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(getApplicationContext(), "OpenCV no se ha podido cargar", Toast.LENGTH_SHORT).show();
-        }
 
         //Botones para la camara
         btnFlipCamera=findViewById(R.id.flip_camera);
@@ -217,6 +228,7 @@ public class CameraActivity extends org.opencv.android.CameraActivity {
         opcionesFiltros.add("Deteccion de Silueta");
         opcionesFiltros.add("Deteccion de Triangulos");
         opcionesFiltros.add("Capturar Movimientos");
+        opcionesFiltros.add("Deteccion Expresiones Faciales");
 
         ArrayAdapter<String> arrayAdapter=new ArrayAdapter<>(this, R.layout.filtros_item, R.id.nombresFiltros,opcionesFiltros);
         String nullArray[]={};
