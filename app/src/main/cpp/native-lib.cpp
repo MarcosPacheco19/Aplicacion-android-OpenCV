@@ -5,9 +5,13 @@
 #include <opencv2/videoio.hpp>
 #include <vector>
 #include <android/bitmap.h>
+#include <opencv2/objdetect.hpp>
 
 using namespace cv;
 using namespace std;
+
+CascadeClassifier detectorCaras;
+vector<Rect> faces;
 
 double distance(Point pt1, Point pt2) {
     int dx = pt1.x - pt2.x;
@@ -263,61 +267,46 @@ Java_ec_edu_ups_visionartificialintegrador_CameraActivity_aCapturarMovimiento(
     matToBitmap(env, src, output, false);
 }
 
+extern "C" JNIEXPORT void JNICALL
+Java_ec_edu_ups_visionartificialintegrador_ExpresionesFaciales_detectarYDibujar(JNIEnv *env,
+                                                     jobject /* this */,
+                                                     jlong addrRgba) {
+    Mat &frame = *(Mat *) addrRgba;
+    Mat frame_gray;
 
+    cvtColor( frame, frame_gray, COLOR_BGR2GRAY );
+    equalizeHist( frame_gray, frame_gray );
 
+    detectorCaras.detectMultiScale( frame_gray, faces);
 
+    for ( size_t i = 0; i < faces.size(); i++ )
+    {
+        Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 );
+        rectangle( frame, Point( faces[i].x, faces[i].y ), Point( faces[i].x+faces[i].width, faces[i].y+faces[i].height), Scalar( 0, 255, 0 ), 2);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Codigo que debe revisarse */
-extern  "C" JNIEXPORT void JNICALL
-Java_ec_edu_ups_visionartificialintegrador_CameraActivity_aHistograma(
-        JNIEnv* env,
-        jobject /* this */,
-        jobject input,
-        jobject output) {
-
-    Mat src;
-    bitmapToMat(env, input, src, false);
-    int *histograma = new int[256];
-    for (int i = 0; i < 256; i++)
-        histograma[i] = 0;
-
-    int pixel = 0;
-    for (int i = 0; i < src.rows; i++){
-        for (int j = 0; j < src.cols; j++){
-            pixel = src.at<uchar>(i, j);
-            histograma[pixel]++;
-        }
+        Mat faceROI = frame_gray( faces[i] );
     }
-    double maximo = 0;
-    for (int i = 0; i < 256; i++){
-        if (maximo < histograma[i])
-            maximo = histograma[i];
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_ec_edu_ups_visionartificialintegrador_ExpresionesFaciales_getTextoEmocion(JNIEnv *env, jobject /* this */, jfloat emotion_v) {
+    string emotion_text;
+
+    if(emotion_v>0 & emotion_v<0.5){
+        emotion_text="Sorprendido";
+    } else if(emotion_v>=0.5 & emotion_v<1.5){
+        emotion_text="Miedo";
+    } else if(emotion_v>=1.5 & emotion_v<2){
+        emotion_text="Enojado/a";
+    } else if(emotion_v>=2 & emotion_v<2.5) {
+        emotion_text = "Neutral";
+    } else if(emotion_v>=2.5 & emotion_v<3.5) {
+        emotion_text = "Triste";
+    } else if(emotion_v>=3.5 & emotion_v<5.5) {
+        emotion_text = "Disgusto";
+    } else {
+        emotion_text = "Feliz";
     }
 
-    int ancho = 800;
-    int alto = 573;
-    Mat lienzo = Mat(Size(ancho, alto), CV_8UC3, Scalar(255, 255, 255));
-
-    double valorEscalado = 0;
-    for (int i = 0; i < 256; i++){
-        valorEscalado = ((double)(histograma[i] / maximo)) * ((double)(alto));
-        line(lienzo, Point(i * 3, alto), Point(i * 3, (alto)-valorEscalado), Scalar(210, 120, 95), 2);
-    }
-
-    matToBitmap(env, lienzo, output, false);
+    return env->NewStringUTF(emotion_text.c_str());
 }

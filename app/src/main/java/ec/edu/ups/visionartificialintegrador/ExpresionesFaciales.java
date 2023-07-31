@@ -17,7 +17,6 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.gpu.GpuDelegate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,7 +35,6 @@ public class ExpresionesFaciales  {
     private int salida;
     private int altura=0;
     private int ancho=0;
-    private GpuDelegate gpuDelegate=null;
     private CascadeClassifier cascadeClassifier;
     ExpresionesFaciales(AssetManager assets, Context context, String path, int inputSize) throws IOException {
 
@@ -130,25 +128,6 @@ public class ExpresionesFaciales  {
         return imagen;
     }
 
-    private String getTextoEmocion(float emocion_v){
-        String valor="";
-        if(emocion_v>0 & emocion_v<0.5){
-            valor="Sorprendido";
-        } else if(emocion_v>=0.5 & emocion_v<1.5){
-            valor="Miedo";
-        } else if(emocion_v>=1.5 & emocion_v<2){
-            valor="Enojado/a";
-        } else if(emocion_v>=2 & emocion_v<2.5) {
-            valor = "Neutral";
-        } else if(emocion_v>=2.5 & emocion_v<3.5) {
-            valor = "Triste";
-        } else if(emocion_v>=3.5 & emocion_v<5.5) {
-            valor = "Disgusto";
-        } else {
-            valor = "Feliz";
-        }
-        return valor;
-    }
 
     private ByteBuffer convertBitmapToByteBufer(Bitmap scaledBitmap){
         ByteBuffer byteBuffer;
@@ -182,4 +161,7 @@ public class ExpresionesFaciales  {
 
         return fileChannel.map(FileChannel.MapMode.READ_ONLY,startOffset,declaredLength);
     }
+
+    public native void  detectarYDibujar(long addrRgba);
+    public native String getTextoEmocion(float emotion_v);
 }
