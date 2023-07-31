@@ -296,13 +296,13 @@ Java_ec_edu_ups_visionartificialintegrador_ExpresionesFaciales_getTextoEmocion(J
         emotion_text="Sorprendido";
     } else if(emotion_v>=0.5 & emotion_v<1.5){
         emotion_text="Miedo";
-    } else if(emotion_v>=1.5 & emotion_v<2){
+    } else if(emotion_v>=1.5 & emotion_v<2.5){
         emotion_text="Enojado/a";
-    } else if(emotion_v>=2 & emotion_v<2.5) {
-        emotion_text = "Neutral";
     } else if(emotion_v>=2.5 & emotion_v<3.5) {
+        emotion_text = "Neutral";
+    } else if(emotion_v>=3.5 & emotion_v<4.5) {
         emotion_text = "Triste";
-    } else if(emotion_v>=3.5 & emotion_v<5.5) {
+    } else if(emotion_v>=4.5 & emotion_v<5.5) {
         emotion_text = "Disgusto";
     } else {
         emotion_text = "Feliz";
